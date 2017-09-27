@@ -5,9 +5,18 @@ var client = github.client();
 var async = require('async');
 const request = require('request-promise');
 const _ = require('lodash');
+const config = require('../config.js');
+
+// Increase the Github API Rate limit exceeded
+var auth_url = github.auth.config({
+    id: config.client_id,
+    secret: config.client_secret,
+    apiUrl: 'http://localhost:3000/api/v3',
+    webUrl: 'http://localhost:3000/'
+}).login(['user', 'repo', 'gist']);
 
 router.get('/getUsersFromOrg', function (req, res, next) {
-    var ghorg = client.org('Target');
+    var ghorg = client.org(config.company);
     ghorg.members(function (err, data) {
         if (err) {
             res.json(err);
@@ -15,7 +24,6 @@ router.get('/getUsersFromOrg', function (req, res, next) {
             res.json(data);
         }
     });
-
 });
 
 router.get('/getProfileInfo/:username', function (req, res) {
@@ -61,9 +69,6 @@ function getRepos(username) {
         uri: 'https://api.github.com/users/' + username + '/repos',
         headers: {
             'User-Agent': 'request'
-        },
-        qs: {
-            per_page: 5
         }
     }
     return new Promise((resolve, reject) => {
@@ -84,9 +89,6 @@ function listOfReposContributedTo(username) {
         uri: 'https://api.github.com/users/' + username + '/received_events',
         headers: {
             'User-Agent': 'request'
-        },
-        qs: {
-            per_page: 5
         }
     }
     return new Promise((resolve, reject) => {
