@@ -13,10 +13,6 @@ $ npm install
 $ node app.js
 ```
 
-## Author
-
-Ashok
-
 ## License
 
 MIT
